@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>CAPTCHA & IP Server</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #74ebd5, #acb6e5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      width: 100%;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #ipBox {
+      margin-top: 20px;
+      font-weight: bold;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Xác minh CAPTCHA để lấy IP Server</h2>
+    <div id="captchaText"></div>
+    <input type="text" id="captchaInput" placeholder="Nhập mã CAPTCHA">
+    <button onclick="verifyCaptcha()">Xác minh</button>
+    <div id="ipBox"></div>
+  </div>
+
+  <script>
+    // Tạo mã CAPTCHA ngẫu nhiên
+    function generateCaptcha() {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      let code = '';
+      for (let i = 0; i < 5; i++) {
+        code += chars[Math.floor(Math.random() * chars.length)];
+      }
+      return code;
+    }
+
+    let captchaCode = generateCaptcha();
+    document.getElementById('captchaText').innerHTML = `
+      <div style="font-size: 24px; letter-spacing: 5px; font-weight: bold; background: #eee; padding: 10px; border-radius: 8px; margin-bottom: 10px;">
+        ${captchaCode}
+      </div>
+    `;
+
+    function verifyCaptcha() {
+      const input = document.getElementById("captchaInput").value.toUpperCase();
+      if (input === captchaCode) {
+        fetch('https://api.ipify.org?format=json')
+          .then(response => response.json())
+          .then(data => {
+            document.getElementById('ipBox').innerText = `IP của bạn: 147.185.221.194:46652`;
+          });
+      } else {
+        alert("CAPTCHA sai! Vui lòng thử lại.");
+        captchaCode = generateCaptcha();
+        document.getElementById('captchaText').innerHTML = `
+          <div style="font-size: 24px; letter-spacing: 5px; font-weight: bold; background: #eee; padding: 10px; border-radius: 8px; margin-bottom: 10px;">
+            ${captchaCode}
+          </div>
+        `;
+      }
+    }
+  </script>
+</body>
+</html>
